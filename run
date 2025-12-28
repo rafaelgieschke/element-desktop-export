@@ -1,0 +1,10 @@
+#!/bin/sh -xeu
+scriptdir="$(dirname -- "$(realpath -- "$0")")"
+
+if ! [ -f "$scriptdir/target/release/element-desktop-export" ]; then
+	(
+		cd -- "$scriptdir"
+		cargo build --release
+	)
+fi
+"$scriptdir/target/release/element-desktop-export" | "$scriptdir/main.js"

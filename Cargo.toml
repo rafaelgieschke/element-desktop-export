@@ -1,0 +1,10 @@
+[package]
+name = "element-desktop-export"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+oo7 = "*"
+tokio = { version = "*", features = ["macros", "rt"] }
+rusqlite = { version = "*", features = ["bundled-sqlcipher-vendored-openssl"] }
+clap = { version = "4.5.53", features = ["derive", "string"] }
