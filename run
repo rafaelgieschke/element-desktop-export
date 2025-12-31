@@ -7,4 +7,6 @@ if ! [ -f "$scriptdir/target/release/element-desktop-export" ]; then
 		cargo build --release
 	)
 fi
-"$scriptdir/target/release/element-desktop-export" | "$scriptdir/main.js"
+
+mkdir -p logs
+"$scriptdir/target/release/element-desktop-export" "$@" | "$scriptdir/main.js"

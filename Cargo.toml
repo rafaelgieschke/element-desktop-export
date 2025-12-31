@@ -8,3 +8,7 @@ oo7 = "*"
 tokio = { version = "*", features = ["macros", "rt"] }
 rusqlite = { version = "*", features = ["bundled-sqlcipher-vendored-openssl"] }
 clap = { version = "4.5.53", features = ["derive", "string"] }
+serde_json = "1.0.148"
+aes = "0.8.4"
+cbc = { version = "0.1.2", features = ["alloc", "std"] }
+base64 = "0.22.1"
