@@ -49,8 +49,7 @@ for (const [room, eventsInRoom] of Map.groupBy(events, (e) => e.room_id)) {
           (event) =>
             html`
               <dt><a href="${url`https://matrix.to/#/${event.room_id}/${event.event_id}`}">${event
-                .user_id ??
-                ""} ${new Date(
+                .sender ?? event.user_id ?? ""} ${new Date(
                 event.origin_server_ts,
               ).toJSON()}</a></dt>
               <dd>${event.content.formatted_body
