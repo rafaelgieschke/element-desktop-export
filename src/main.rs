@@ -25,18 +25,23 @@ struct Cli {
     events_db: Option<std::path::PathBuf>,
 }
 
-async fn get_secret_basic_text(
+async fn get_secret_text(
     config: serde_json::Value,
+    encrypted: bool,
 ) -> Result<String, Box<dyn std::error::Error>> {
-    let mut secret = Vec::new();
+    let mut secret_str: &str = "";
     for (key, val) in config["safeStorage"].as_object().ok_or("")? {
         if key.starts_with("seshat|")
             && let Some(val2) = val.as_str()
         {
-            secret = BASE64_STANDARD.decode(val2)?;
+            secret_str = val2;
         }
     }
+    if !encrypted {
+        return Ok(secret_str.to_owned());
+    }
 
+    let secret = BASE64_STANDARD.decode(secret_str)?;
     // https://github.com/chromium/chromium/blob/main/components/os_crypt/sync/os_crypt_posix.cc
     Ok(String::from_utf8(
         cbc::Decryptor::<aes::Aes128>::new(
@@ -81,7 +86,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     )?)?;
     // https://www.electronjs.org/docs/latest/api/safe-storage
     let secret2 = match config["safeStorageBackend"].as_str().ok_or("")? {
-        "basic_text" => get_secret_basic_text(config).await,
+        "plaintext" => get_secret_text(config, false).await,
+        "basic_text" => get_secret_text(config, true).await,
         "gnome_libsecret" => {
             get_secret_gnome_libsecret(
                 args.keyring.unwrap_or(
@@ -91,7 +97,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             )
             .await
         }
-        _ => panic!("safeStorageBackend not supported"),
+        other_backend => panic!("safeStorageBackend {other_backend:?} not supported"),
     }?;
 
     let conn = rusqlite::Connection::open_with_flags(
