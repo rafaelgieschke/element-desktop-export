@@ -8,5 +8,15 @@ if ! [ -f "$scriptdir/target/release/element-desktop-export" ]; then
 	)
 fi
 
+PATH="$PATH:$scriptdir"
+
+if ! command -v deno; then
+	(
+		cd -- "$scriptdir"
+		curl -L https://github.com/denoland/deno/releases/ | grep -Eiom1 '/[^"]*/[^"]+-(amd64|x86_64)-unknown-linux-gnu.zip' | xargs -tI{} curl -L https://github.com/{} | jar x deno
+		chmod +x deno
+	)
+fi
+
 mkdir -p logs
 "$scriptdir/target/release/element-desktop-export" "$@" | "$scriptdir/main.js"
